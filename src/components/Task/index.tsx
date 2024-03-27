@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ButtonDanger, ButtonInfo } from '../Button';
 
 const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
   const [expanded, setExpanded] = useState(true);
@@ -12,7 +13,7 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
   };
 
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-md p-4 bg-slate-100">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-semibold">{name}</h2>
         <div>
@@ -28,14 +29,9 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
       </div>
       {expanded && (
         <div className='mt-5'>
-          <hr />
           <div className='mt-5 flex justify-between'>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Alterar
-            </button>
-            <button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleDelete}>
-              Excluir
-            </button>
+            <ButtonInfo action={null} text={'Alterar'}/>
+            <ButtonDanger text={'Excluir'} action={handleDelete}/>
           </div>
         </div>
       )}

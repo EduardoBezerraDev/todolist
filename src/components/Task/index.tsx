@@ -14,8 +14,7 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
     onDelete(id);
   };
 
-  const handleEdit = (taskId) => {
-    console.log(taskId)
+  const handleEdit = (taskId: number) => {
     navigate(`/editar/${taskId}`);
   }
 
@@ -31,14 +30,18 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
       </div>
       <div>
         <p className="mb-1"><strong>Data de Início:</strong> {startDate}</p>
-        <p className="mb-1"><strong>Data de Término:</strong> {endDate}</p>
+        <p className="mb-1"><strong>Previsão de Término:</strong> {endDate}</p>
         <p className="mb-1"><strong>Status:</strong> {status}</p>
       </div>
       {expanded && (
         <div className='mt-5'>
           <div className='mt-5 flex justify-between'>
-            <ButtonInfo action={()=>handleEdit(id)} text={'Alterar'}/>
-            <ButtonDanger text={'Excluir'} action={handleDelete}/>
+            <div className='p-3'>
+              <ButtonInfo action={() => handleEdit(id)} text={'Alterar'} />
+            </div>
+            <div className='p-3'>
+              <ButtonDanger text={'Excluir'} action={handleDelete} />
+            </div>
           </div>
         </div>
       )}

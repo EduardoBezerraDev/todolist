@@ -1,10 +1,24 @@
 import { useForm } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../components/Modal';
+import { ButtonSuccess } from '../../components/Button';
 
 const CreateTaskPage = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+  
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
@@ -19,8 +33,31 @@ const CreateTaskPage = () => {
   }, [])
   
 
-  const onSubmit = (data: any) => {
-    
+  const onSubmit = async (data: any) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks/create', {
+        method: 'POST',
+        headers: {
+        },
+        body: JSON.stringify({
+          name:data.name,
+          startDate:data.startDate,
+          endDate:data.endDate,
+          status:data.status,
+        }),
+      });
+
+      if(response.ok){
+        openModal()
+      }
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+      
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
   };
 
   return (
@@ -28,7 +65,7 @@ const CreateTaskPage = () => {
       <h1 className="text-3xl font-semibold mb-8">Criar Nova Tarefa</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
-          <label htmlFor="name" className="block mb-2">Nome:</label>
+          <label htmlFor="name" className="block mb-2">Descrição:</label>
           <input
             type="text"
             id="name"
@@ -48,7 +85,7 @@ const CreateTaskPage = () => {
           {errors.startDate && <p className="text-red-500 mt-1">A data de início é obrigatória</p>}
         </div>
         <div className="mb-4">
-          <label htmlFor="endDate" className="block mb-2">Data de Término:</label>
+          <label htmlFor="endDate" className="block mb-2">Previsão de Término:</label>
           <DatePicker
             selected={endDate}
             onChange={(date) => setValue("endDate", date)}
@@ -68,10 +105,20 @@ const CreateTaskPage = () => {
             <option value="Planejado">Planejado</option>
             <option value="Concluído">Concluído</option>
             <option value="Atrasado">Atrasado</option>
+            <option value="Impedido">Impedido</option>
+
           </select>
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">Criar Tarefa</button>
       </form>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Sucesso!'}>
+        <div className="p-4">
+          <p className="text-lg">Tarefa criada com sucesso!</p>
+        </div>
+        <div className='float-right'>
+          <ButtonSuccess action={()=>{navigate('/tarefas')}} text={"Ir para tarefas"}/>
+        </div>
+      </Modal>
     </div>
   );
 };

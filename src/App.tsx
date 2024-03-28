@@ -12,7 +12,6 @@ const App = () => {
         <Route Component={EditTaskPage} path="/editar/:task" />
         <Route Component={CreateTaskPage} path="/criar" />
       </Routes>
-
     </Router>
   );
 };

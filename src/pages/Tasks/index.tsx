@@ -4,11 +4,52 @@ import { Key, SetStateAction, useEffect, useState } from 'react';
 import Task from '../../components/Task';
 import { JSX } from 'react/jsx-runtime';
 import { redirect, useNavigate } from 'react-router-dom';
+import Modal from '../../components/Modal';
+import { ButtonDanger } from '../../components/Button';
 
 const TasksPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTask, setSelectedTask] = useState(0);
+
   const [filteredTasks, setFilteredTasks] = useState<any>([]);
+
+  
+  const [isOpen, setIsOpen] = useState(false);
+
+  
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks/delete', {
+        method: 'DELETE',
+        headers: {
+        },
+        body: JSON.stringify({
+          id: id,
+        }),
+      });
+
+      if (response.ok) {
+        getAllTasks()
+        setIsOpen(false)
+      }
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
 
   const handleSearch = (event: { target: { value: SetStateAction<string>; }; }) => {
     setSearchTerm(event.target.value);
@@ -64,12 +105,21 @@ const TasksPage = () => {
       </div>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredTasks.map((todo: JSX.IntrinsicAttributes & { id: any; name: any; startDate: any; endDate: any; status: any; onDelete: any; }, index: Key | null | undefined) => (
-          <div key={index}>
-            <Task {...todo} />
+        {filteredTasks.map((todo: JSX.IntrinsicAttributes & { id: number; name: string; startDate: any; endDate: any; status: string; }, index: Key | null | undefined) => (
+          <div key={index} onClick={()=>{setSelectedTask(todo.id)}}>
+            <Task {...todo} onDelete = {()=>{setIsOpen(!isOpen)}} />
           </div>
         ))}
       </section>
+
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Sucesso!'}>
+        <div className="p-4">
+          <p className="text-lg">Deseja realmente deletar essa tarefa?</p>
+        </div>
+        <div className='float-right'>
+          <ButtonDanger action={() => { handleDelete(selectedTask) }} text={"Sim"} />
+        </div>
+      </Modal>
     </div>
   );
 };

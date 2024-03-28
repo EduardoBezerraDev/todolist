@@ -42,10 +42,6 @@ const TasksPage = () => {
     }
   };
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -105,11 +101,12 @@ const TasksPage = () => {
       </div>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredTasks.map((todo: JSX.IntrinsicAttributes & { id: number; name: string; startDate: any; endDate: any; status: string; }, index: Key | null | undefined) => (
+        {filteredTasks && filteredTasks.map((todo: JSX.IntrinsicAttributes & { id: number; name: string; startDate: any; endDate: any; status: string; }, index: Key | null | undefined) => (
           <div key={index} onClick={()=>{setSelectedTask(todo.id)}}>
             <Task {...todo} onDelete = {()=>{setIsOpen(!isOpen)}} />
           </div>
         ))}
+        {filteredTasks.length<1 && (<h1>Não há tarefas cadastradas</h1>)}
       </section>
 
       <Modal isOpen={isOpen} onClose={closeModal} title={'Sucesso!'}>

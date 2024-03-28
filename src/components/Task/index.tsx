@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { ButtonDanger, ButtonInfo } from '../Button';
+import { useNavigate } from 'react-router-dom';
 
 const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
   const [expanded, setExpanded] = useState(true);
+  const navigate = useNavigate();
 
   const handleToggleExpand = () => {
     setExpanded(!expanded);
@@ -11,6 +13,11 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
   const handleDelete = () => {
     onDelete(id);
   };
+
+  const handleEdit = (taskId) => {
+    console.log(taskId)
+    navigate(`/editar/${taskId}`);
+  }
 
   return (
     <div className="border rounded-md p-4 bg-slate-100">
@@ -30,7 +37,7 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }) => {
       {expanded && (
         <div className='mt-5'>
           <div className='mt-5 flex justify-between'>
-            <ButtonInfo action={null} text={'Alterar'}/>
+            <ButtonInfo action={()=>handleEdit(id)} text={'Alterar'}/>
             <ButtonDanger text={'Excluir'} action={handleDelete}/>
           </div>
         </div>

@@ -5,9 +5,9 @@ import Task from '../../components/Task';
 import { JSX } from 'react/jsx-runtime';
 
 const todos = [
-  { name: 'Comprar mantimentos', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Em andamento' },
-  { name: 'Ler um livro', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Planejado' },
-  { name: 'Fazer exercícios', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Em andamento' },
+  { id:1,name: 'Comprar mantimentos', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Em andamento' },
+  { id:2,name: 'Ler um livro', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Planejado' },
+  { id:3,name: 'Fazer exercícios', startDate: '28/01/2024', endDate: '28/01/2024', status: 'Em andamento' },
 ];
 
 const TasksPage = () => {

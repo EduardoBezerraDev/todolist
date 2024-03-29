@@ -1,19 +1,33 @@
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { format, parseISO } from 'date-fns';
 import Modal from '../../components/Modal';
 import { ButtonSuccess } from '../../components/Button';
+import { format, parseISO } from 'date-fns';
+import getStatusColor from '../../util/getStatusColor';
+import 'react-datepicker/dist/react-datepicker.css';
+
+interface EditedTask {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+}
 
 const EditTaskPage = () => {
-  const [editedTask, setEditedTask] = useState({});
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [editedTask, setEditedTask] = useState<EditedTask>({
+    id: '',
+    name: '',
+    startDate: new Date(),
+    endDate: new Date(),
+    status: ''
+  });
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const { task } = useParams();
   const navigate = useNavigate();
-
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const openModal = () => {
     setIsOpen(true);
@@ -23,11 +37,11 @@ const EditTaskPage = () => {
     setIsOpen(false);
   };
 
-  const formatDateForMySQL = (date: string | number | Date) => {
-    return format(new Date(date), 'yyyy-MM-dd');
+  const formatDateForMySQL = (date: Date): string => {
+    return format(date, 'yyyy-MM-dd');
   };
 
-  const getTaskById = async (taskId: string | number) => {
+  const getTaskById = async (taskId: string | undefined) => {
     try {
       const response = await fetch('http://localhost:8000/api/tasks?id=' + taskId);
       if (!response.ok) {
@@ -45,7 +59,7 @@ const EditTaskPage = () => {
     }
   };
 
-  const handleChange = (event: { target: { name: any; value: any; }; }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = event.target;
     setEditedTask({
       ...editedTask,
@@ -54,45 +68,46 @@ const EditTaskPage = () => {
   };
 
   useEffect(() => {
-    getTaskById(Number(task));
+    getTaskById(task);
   }, [task]);
 
-  const handleStartDateChange = (date: string | number | SetStateAction<Date>) => {
+  const handleStartDateChange = (date: Date) => {
     setStartDate(date);
     setEditedTask({
       ...editedTask,
-      startDate: formatDateForMySQL(date)
+      startDate: date
     });
   };
 
-  const handleEndDateChange = (date: string | number | SetStateAction<Date>) => {
+  const handleEndDateChange = (date: Date) => {
     setEndDate(date);
     setEditedTask({
       ...editedTask,
-      endDate: formatDateForMySQL(date)
+      endDate: date
     });
   };
 
-  const handleSubmit = async (event: { preventDefault: () => void; }) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const response = await fetch('http://localhost:8000/api/tasks/update', {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           id: editedTask.id,
           name: editedTask.name,
-          startDate: editedTask.startDate,
-          endDate: editedTask.endDate,
+          startDate: formatDateForMySQL(editedTask.startDate),
+          endDate: formatDateForMySQL(editedTask.endDate),
           status: editedTask.status,
         }),
       });
 
       if (response.ok) {
-        openModal()
+        openModal();
       } else {
-        throw new Error('Failed to create task');
+        throw new Error('Failed to update task');
       }
 
     } catch (error) {
@@ -110,7 +125,7 @@ const EditTaskPage = () => {
             type="text"
             id="name"
             name="name"
-            value={editedTask.name || ''}
+            value={editedTask.name}
             onChange={handleChange}
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           />
@@ -138,13 +153,13 @@ const EditTaskPage = () => {
           <select
             id="status"
             name="status"
-            value={editedTask.status || ''}
+            value={editedTask.status}
             onChange={handleChange}
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           >
-            <option value="Em andamento">Em andamento</option>
-            <option value="Concluído">Concluído</option>
-            <option value="Impedido">Impedido</option>
+            <option value="Em andamento" className={`mb-1 ${getStatusColor('Em andamento')}`}>Em andamento</option>
+            <option value="Concluído" className={`mb-1 ${getStatusColor('Concluído')}`}>Concluído</option>
+            <option value="Impedido" className={`mb-1 ${getStatusColor('Impedido')}`}>Impedido</option>
           </select>
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">Salvar Alterações</button>

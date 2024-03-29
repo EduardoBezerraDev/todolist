@@ -21,19 +21,23 @@ const TasksPage = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/tasks/delete/${id}`, {
+      const response = await fetch('http://localhost:8000/api/tasks/delete', {
         method: 'DELETE',
+        body: JSON.stringify({
+          id: id,
+        }),
       });
 
       if (response.ok) {
-        await getAllTasks();
-        setIsOpen(false);
-      } else {
-        throw new Error('Failed to delete task');
+        getAllTasks()
+        setIsOpen(false)
+      }
+      if (!response.ok) {
+        throw new Error('Failed to create task');
       }
 
     } catch (error) {
-      console.error('Error deleting task:', error);
+      console.error('Error creating task:', error);
     }
   };
 
@@ -94,7 +98,7 @@ const TasksPage = () => {
         )}
       </section>
 
-      <Modal isOpen={isOpen} onClose={closeModal} title={'Sucesso!'}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Tem certeza?'}>
         <div className="p-4">
           <p className="text-lg">Deseja realmente deletar essa tarefa?</p>
         </div>

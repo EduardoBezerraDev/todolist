@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/Modal';
 import { ButtonSuccess } from '../../components/Button';
+import { format } from 'date-fns';
 
 const CreateTaskPage = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
@@ -22,6 +23,10 @@ const CreateTaskPage = () => {
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
+  const formatDateForMySQL = (date) => {
+    return format(new Date(date), 'yyyy-MM-dd');
+  };
+
   const setInitialDates = () => {
     const today = new Date();
     setValue("startDate", today);
@@ -31,27 +36,25 @@ const CreateTaskPage = () => {
   useEffect(() => {
     setInitialDates();
   }, [])
-  
 
-  const onSubmit = async (data: any) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
     try {
       const response = await fetch('http://localhost:8000/api/tasks/create', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name:data.name,
-          startDate:data.startDate,
-          endDate:data.endDate,
-          status:data.status,
+          name: data.name,
+          startDate: formatDateForMySQL(data.startDate),
+          endDate: formatDateForMySQL(data.endDate),
+          status: data.status,
         }),
       });
 
       if(response.ok){
         openModal()
-      }
-      if (!response.ok) {
+      } else {
         throw new Error('Failed to create task');
       }
       
@@ -102,9 +105,7 @@ const CreateTaskPage = () => {
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           >
             <option value="Em andamento">Em andamento</option>
-            <option value="Planejado">Planejado</option>
             <option value="Concluído">Concluído</option>
-            <option value="Atrasado">Atrasado</option>
             <option value="Impedido">Impedido</option>
 
           </select>

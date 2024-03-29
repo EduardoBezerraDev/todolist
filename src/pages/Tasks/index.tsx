@@ -7,8 +7,8 @@ import { ButtonDanger, ButtonInfo } from '../../components/Button';
 interface TaskType {
   id: number;
   name: string;
-  startDate: string; // Adapte para o tipo de data correto se necessário
-  endDate: string; // Adapte para o tipo de data correto se necessário
+  startDate: string;
+  endDate: string;
   status: string;
 }
 

@@ -3,17 +3,10 @@ import { ButtonDanger, ButtonInfo } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import getStatusColor from '../../util/getStatusColor';
+import { TtaskProps } from '../../types/Task';
 
-interface TaskProps {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-  onDelete: (id: number) => void;
-}
 
-const Task = ({ id, name, startDate, endDate, status, onDelete }: TaskProps) => {
+const Task = ({ id, name, startDate, endDate, status, onDelete }: TtaskProps) => {
   const [expanded, setExpanded] = useState<boolean>(true);
   const navigate = useNavigate();
 

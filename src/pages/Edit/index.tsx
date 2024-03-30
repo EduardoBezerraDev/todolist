@@ -6,17 +6,11 @@ import { ButtonSuccess } from '../../components/Button';
 import { format, parseISO } from 'date-fns';
 import getStatusColor from '../../util/getStatusColor';
 import 'react-datepicker/dist/react-datepicker.css';
+import { TeditedTask } from '../../types/Task';
 
-interface EditedTask {
-  id: string;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  status: string;
-}
 
 const EditTaskPage = () => {
-  const [editedTask, setEditedTask] = useState<EditedTask>({
+  const [editedTask, setEditedTask] = useState<TeditedTask>({
     id: '',
     name: '',
     startDate: new Date(),

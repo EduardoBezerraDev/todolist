@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ButtonDanger, ButtonInfo } from '../Button';
 import { useNavigate } from 'react-router-dom';
-import { format, parseISO } from 'date-fns'; 
+import { format, parseISO } from 'date-fns';
 import getStatusColor from '../../util/getStatusColor';
 
 interface TaskProps {
@@ -42,18 +42,20 @@ const Task = ({ id, name, startDate, endDate, status, onDelete }: TaskProps) => 
           </button>
         </div>
       </div>
-      <div>
-        <p className="mb-1"><strong>Data de Início:</strong> {format(parsedStartDate, 'dd-MM-yyyy')}</p>
-        <p className="mb-1"><strong>Data de Término:</strong> {format(parsedEndDate, 'dd-MM-yyyy')}</p>
-        <p className={`mb-1 ${getStatusColor(status)}`}><strong>Status:</strong> {status}</p>
-      </div>
+
       {expanded && (
-        <div className='mt-5'>
-          <div className='mt-5 flex justify-between'>
-            <ButtonInfo action={handleEditClick} text={'Alterar'} />
-            <ButtonDanger text={'Excluir'} action={handleDeleteClick} />
+        <>
+          <div>
+            <p className="mb-1"><strong>Data de Início:</strong> {format(parsedStartDate, 'dd-MM-yyyy')}</p>
+            <p className="mb-1"><strong>Data de Término:</strong> {format(parsedEndDate, 'dd-MM-yyyy')}</p>
+            <p className={`mb-1 ${getStatusColor(status)}`}><strong>Status:</strong> {status}</p>
+          </div><div className='mt-5'>
+            <div className='mt-5 flex justify-between'>
+              <ButtonInfo action={handleEditClick} text={'Alterar'} />
+              <ButtonDanger text={'Excluir'} action={handleDeleteClick} />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

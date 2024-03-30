@@ -86,7 +86,7 @@ const TasksPage = () => {
         </button>
       </div>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto" style={{maxHeight: '74vh'}}>
         {filteredTasks.length > 0 ? (
           filteredTasks.map((task: TaskType) => (
             <div key={task.id} onClick={() => setSelectedTask(task.id)}>

@@ -11,6 +11,7 @@ const App = () => {
         <Route Component={TasksPage} path="/tarefas" />
         <Route Component={EditTaskPage} path="/editar/:task" />
         <Route Component={CreateTaskPage} path="/criar" />
+        <Route path="*" element={<p>Você descobriu uma rota não existente :) </p>} />
       </Routes>
     </Router>
   );

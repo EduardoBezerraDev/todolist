@@ -1,17 +1,65 @@
-import { SetStateAction, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
+import Modal from '../../components/Modal';
+import { ButtonSuccess } from '../../components/Button';
+import { format, parseISO } from 'date-fns';
+import getStatusColor from '../../util/getStatusColor';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const mockTask = { name: 'Comprar mantimentos', startDate: new Date(), endDate: new Date(), status: 'Em andamento' }
+interface EditedTask {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+}
 
 const EditTaskPage = () => {
-  const [editedTask, setEditedTask] = useState({});
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [editedTask, setEditedTask] = useState<EditedTask>({
+    id: '',
+    name: '',
+    startDate: new Date(),
+    endDate: new Date(),
+    status: ''
+  });
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const { task } = useParams();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleChange = (event: { target: { name: any; value: any; }; }) => {
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const formatDateForMySQL = (date: Date): string => {
+    return format(date, 'yyyy-MM-dd');
+  };
+
+  const getTaskById = async (taskId: string | undefined) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks?id=' + taskId);
+      if (!response.ok) {
+        throw new Error('Falha ao obter as tasks');
+      }
+      const tasksData = await response.json();
+      const formattedStartDate = parseISO(tasksData.startDate);
+      const formattedEndDate = parseISO(tasksData.endDate);
+
+      setEditedTask(tasksData);
+      setStartDate(formattedStartDate);
+      setEndDate(formattedEndDate);
+    } catch (error) {
+      console.error('Erro ao obter as tasks:', error);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = event.target;
     setEditedTask({
       ...editedTask,
@@ -20,30 +68,51 @@ const EditTaskPage = () => {
   };
 
   useEffect(() => {
-    setEditedTask(mockTask);
-    setStartDate(new Date(mockTask.startDate));
-    setEndDate(new Date(mockTask.endDate));
-  }, []);
+    getTaskById(task);
+  }, [task]);
 
-  const handleStartDateChange = (date: SetStateAction<Date>) => {
+  const handleStartDateChange = (date: Date) => {
     setStartDate(date);
     setEditedTask({
       ...editedTask,
-      startDate: date.toLocaleDateString()
+      startDate: date
     });
   };
 
-  const handleEndDateChange = (date: SetStateAction<Date>) => {
+  const handleEndDateChange = (date: Date) => {
     setEndDate(date);
     setEditedTask({
       ...editedTask,
-      endDate: date.toLocaleDateString()
+      endDate: date
     });
   };
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Tarefa editada:", editedTask);
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: editedTask.id,
+          name: editedTask.name,
+          startDate: formatDateForMySQL(editedTask.startDate),
+          endDate: formatDateForMySQL(editedTask.endDate),
+          status: editedTask.status,
+        }),
+      });
+
+      if (response.ok) {
+        openModal();
+      } else {
+        throw new Error('Failed to update task');
+      }
+
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
   };
 
   return (
@@ -56,7 +125,7 @@ const EditTaskPage = () => {
             type="text"
             id="name"
             name="name"
-            value={editedTask.name || ''}
+            value={editedTask.name}
             onChange={handleChange}
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           />
@@ -66,6 +135,7 @@ const EditTaskPage = () => {
           <DatePicker
             selected={startDate}
             onChange={handleStartDateChange}
+            dateFormat="dd/MM/yyyy"
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           />
         </div>
@@ -83,18 +153,25 @@ const EditTaskPage = () => {
           <select
             id="status"
             name="status"
-            value={editedTask.status || ''}
+            value={editedTask.status}
             onChange={handleChange}
             className="py-2 px-4 border rounded-lg focus:outline-none w-full"
           >
-            <option value="Em andamento">Em andamento</option>
-            <option value="Planejado">Planejado</option>
-            <option value="Concluído">Concluído</option>
-            <option value="Atrasado">Atrasado</option>
+            <option value="Em andamento" className={`mb-1 ${getStatusColor('Em andamento')}`}>Em andamento</option>
+            <option value="Concluído" className={`mb-1 ${getStatusColor('Concluído')}`}>Concluído</option>
+            <option value="Impedido" className={`mb-1 ${getStatusColor('Impedido')}`}>Impedido</option>
           </select>
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">Salvar Alterações</button>
       </form>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Sucesso!'}>
+        <div className="p-4">
+          <p className="text-lg">Alterações realizadas com sucesso</p>
+        </div>
+        <div className='float-right'>
+          <ButtonSuccess action={() => { navigate('/tarefas') }} text={"Ir para tarefas"} />
+        </div>
+      </Modal>
     </div>
   );
 };

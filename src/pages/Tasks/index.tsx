@@ -3,20 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import Task from '../../components/Task';
 import Modal from '../../components/Modal';
 import { ButtonDanger, ButtonInfo } from '../../components/Button';
+import { TtaskType } from '../../types/Task';
 
-interface TaskType {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-}
+
 
 const TasksPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
-  const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [tasks, setTasks] = useState<TtaskType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleDelete = async (id: number) => {

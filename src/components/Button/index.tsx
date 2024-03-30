@@ -1,11 +1,8 @@
 import React from 'react';
+import { TbuttonProps } from '../../types/Button';
 
-interface ButtonProps {
-  action: () => void;
-  text: string;
-}
 
-const ButtonDanger: React.FC<ButtonProps> = ({ action, text }) => {
+const ButtonDanger: React.FC<TbuttonProps> = ({ action, text }) => {
   return (
     <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-3-lg sm:w-auto w-full" onClick={action}>
       {text}
@@ -13,7 +10,7 @@ const ButtonDanger: React.FC<ButtonProps> = ({ action, text }) => {
   );
 };
 
-const ButtonInfo: React.FC<ButtonProps> = ({ action, text }) => {
+const ButtonInfo: React.FC<TbuttonProps> = ({ action, text }) => {
   return (
     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-3-lg sm:w-auto w-full" onClick={action}>
       {text}
@@ -21,7 +18,7 @@ const ButtonInfo: React.FC<ButtonProps> = ({ action, text }) => {
   );
 };
 
-const ButtonSuccess: React.FC<ButtonProps> = ({ action, text }) => {
+const ButtonSuccess: React.FC<TbuttonProps> = ({ action, text }) => {
   return (
     <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-3-lg sm:w-auto w-full" onClick={action}>
       {text}

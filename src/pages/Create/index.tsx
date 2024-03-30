@@ -7,16 +7,10 @@ import { ButtonSuccess } from '../../components/Button';
 import { format } from 'date-fns';
 import getStatusColor from '../../util/getStatusColor';
 import 'react-datepicker/dist/react-datepicker.css';
-
-interface FormData {
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  status: string;
-}
+import { TformData } from '../../types/Task';
 
 const CreateTaskPage = () => {
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FormData>();
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<TformData>();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [endDateError, setEndDateError] = useState<string>('');
@@ -46,7 +40,7 @@ const CreateTaskPage = () => {
     setInitialDates();
   }, [])
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: TformData) => {
     try {
       if (data.endDate < data.startDate) {
         setEndDateError('A data de término deve ser posterior à data de início');
